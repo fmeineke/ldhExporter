@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE xml>
+<configuration>
+    <appender name="STDOUT"
+        class="ch.qos.logback.core.ConsoleAppender">
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+        </filter>
+        <encoder>
+        <!-- 
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level (%file:%line\) - %message%n</pattern>
+         -->
+            <pattern>%-5level (%file:%line\): %message%n</pattern>
+        </encoder>
+    </appender>
+
+    <logger name="ca.uhn.fhir" level="ERROR"/>
+    <logger name="com.networknt.schema" level="ERROR"/>
+    <root level="DEBUG">
+        <appender-ref ref="STDOUT" />
+    </root>
+</configuration>

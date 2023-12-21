@@ -23,8 +23,8 @@ import org.slf4j.LoggerFactory;
 import com.fasterxml.jackson.databind.JsonNode;
 
 public class XslPipeline {
-	Templates xslJson2SaxonXml;
-	Templates xslSeek2Csh;
+	Templates xslJson2Xml;
+	Templates xslLdh2Csh;
 	Templates xslXml2Json;
 	Templates xslCsh2Xml;
 	SAXTransformerFactory stf;
@@ -33,10 +33,10 @@ public class XslPipeline {
 	
 	public void init() throws TransformerConfigurationException {		
 		stf = (SAXTransformerFactory)TransformerFactory.newInstance();
-		xslJson2SaxonXml = stf.newTemplates(new StreamSource(
-				getClass().getClassLoader().getResourceAsStream("xsl/json2SaxonXml.xsl")));
-		xslSeek2Csh = stf.newTemplates(new StreamSource(
-				getClass().getClassLoader().getResourceAsStream("xsl/transform.xsl")));
+		xslJson2Xml = stf.newTemplates(new StreamSource(
+				getClass().getClassLoader().getResourceAsStream("xsl/json2xml.xsl")));
+		xslLdh2Csh = stf.newTemplates(new StreamSource(
+				getClass().getClassLoader().getResourceAsStream("xsl/ldh2csh.xsl")));
 		xslXml2Json = stf.newTemplates(new StreamSource(
 				getClass().getClassLoader().getResourceAsStream("xsl/xml2json.xsl")));
 		xslCsh2Xml = stf.newTemplates(new StreamSource(
@@ -46,7 +46,7 @@ public class XslPipeline {
 	}
 	void pipeToSaxon(Source input,OutputStream out) throws TransformerException {
 		if (!compiled) init();
-		TransformerHandler th1 = stf.newTransformerHandler(xslJson2SaxonXml);
+		TransformerHandler th1 = stf.newTransformerHandler(xslJson2Xml);
 		th1.setResult(new StreamResult(out));
 		Transformer t = stf.newTransformer();
 		t.transform(input, new SAXResult(th1));
@@ -60,8 +60,8 @@ public class XslPipeline {
 	 */	
 	void pipeToCsh(Source input,OutputStream out) throws TransformerException {
 		if (!compiled) init();
-		TransformerHandler th1 = stf.newTransformerHandler(xslJson2SaxonXml);
-		TransformerHandler th2 = stf.newTransformerHandler(xslSeek2Csh);
+		TransformerHandler th1 = stf.newTransformerHandler(xslJson2Xml);
+		TransformerHandler th2 = stf.newTransformerHandler(xslLdh2Csh);
 		TransformerHandler th3 = stf.newTransformerHandler(xslXml2Json);
 		th1.setResult(new SAXResult(th2));
 		th2.setResult(new SAXResult(th3));
@@ -73,8 +73,8 @@ public class XslPipeline {
 
 	void pipeToCshXml(Source input,OutputStream out) throws TransformerException {
 		if (!compiled) init();
-		TransformerHandler th1 = stf.newTransformerHandler(xslJson2SaxonXml);
-		TransformerHandler th2 = stf.newTransformerHandler(xslSeek2Csh);
+		TransformerHandler th1 = stf.newTransformerHandler(xslJson2Xml);
+		TransformerHandler th2 = stf.newTransformerHandler(xslLdh2Csh);
 		th1.setResult(new SAXResult(th2));
 		th2.setResult(new StreamResult(out));
 		Transformer t = stf.newTransformer();
@@ -89,8 +89,8 @@ public class XslPipeline {
 	 */	
 	void pipeToXml(Source input,OutputStream out) throws TransformerException {
 		if (!compiled) init();
-		TransformerHandler th1 = stf.newTransformerHandler(xslJson2SaxonXml);
-		TransformerHandler th2 = stf.newTransformerHandler(xslSeek2Csh);
+		TransformerHandler th1 = stf.newTransformerHandler(xslJson2Xml);
+		TransformerHandler th2 = stf.newTransformerHandler(xslLdh2Csh);
 		TransformerHandler th4 = stf.newTransformerHandler(xslCsh2Xml);
 		th1.setResult(new SAXResult(th2));
 		th2.setResult(new SAXResult(th4));
