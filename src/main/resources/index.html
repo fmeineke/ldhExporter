@@ -1,0 +1,27 @@
+<html>
+<body>
+    <h1>SeekExporter</h1>
+    <p>Simple REST-API for transforming <a href="https://seek4science.org/">FAIRDOM Seek</a> investigations with NFDI4Health defined MDS extended metadata</p>
+
+    <h2>Parameter</h2>
+    
+    <ul>
+        <li>format=[seek|csh|xml|cshval] (Default:<b>csh</b>)</li>
+        <li>id=[investigations|studies|projects]/&lt;number&gt;</li>
+        <li>url=&lt;url of seek instance&gt; (Default:<b>${LDH_SOURCE})</b></li>
+    </ul>
+    
+    <h2>Examples</h2>
+    <p> 
+        <ul>
+            <li><a href="${LDH_EXP}/export?id=investigations/2">${LDH_EXP}/export?id=investigations/2</a></li>
+            <li><a href="${LDH_EXP}/export?id=investigations/2&format=seek">${LDH_EXP}/export?id=investigations/2&format=seek</a></li>
+            <li><a href="${LDH_EXP}/export?id=investigations/2&format=csh">${LDH_EXP}/export?id=investigations/2&format=csh</a></li>
+            <li><a href="${LDH_EXP}/export?id=investigations/2&format=cshval">${LDH_EXP}/export?id=investigations/2&format=cshval</a></li>
+            <li><a href="${LDH_EXP}/export?id=investigations/2&format=xml">${LDH_EXP}/export?id=investigations/2&format=xml</a></li>
+        </ul>
+    </p>
+    <hr/>
+Version 12.2023 &#169; F. Meineke for <a href="https://www.nfdi4health.de/">NFDI4Health</a>
+</body>
+</html>
