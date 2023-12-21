@@ -9,7 +9,7 @@
     exclude-result-prefixes="xs math fn" 
     version="3.0">
 
-    <xsl:output indent="yes" omit-xml-declaration="yes" />
+    <xsl:output indent="yes" omit-xml-declaration="no" />
     <xsl:mode on-no-match="shallow-skip" />
 
 <xsl:template match="/">

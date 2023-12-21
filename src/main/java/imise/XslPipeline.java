@@ -1,6 +1,7 @@
 package imise;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.StringReader;
@@ -27,39 +28,56 @@ public class XslPipeline {
 	Templates xslLdh2Csh;
 	Templates xslXml2Json;
 	Templates xslCsh2Xml;
+	Templates xslToFhir;
 	SAXTransformerFactory stf;
 	final static Logger log = LoggerFactory.getLogger(XslPipeline.class);
 	boolean compiled = false;
+
 	
-	public void init() throws TransformerConfigurationException {		
-		stf = (SAXTransformerFactory)TransformerFactory.newInstance();
-		xslJson2Xml = stf.newTemplates(new StreamSource(
-				getClass().getClassLoader().getResourceAsStream("xsl/json2xml.xsl")));
-		xslLdh2Csh = stf.newTemplates(new StreamSource(
-				getClass().getClassLoader().getResourceAsStream("xsl/ldh2csh.xsl")));
-		xslXml2Json = stf.newTemplates(new StreamSource(
-				getClass().getClassLoader().getResourceAsStream("xsl/xml2json.xsl")));
-		xslCsh2Xml = stf.newTemplates(new StreamSource(
-				getClass().getClassLoader().getResourceAsStream("xsl/pretty-xml.xsl")));
+	InputStream loadResource(String name) {
+		InputStream is = getClass().getClassLoader().getResourceAsStream(name);
+		if (is == null )log.debug("failed to load " + name);
+		return is;
+	}
+	public void init() throws TransformerConfigurationException {
+		try {
+			stf = (SAXTransformerFactory) TransformerFactory.newInstance();
+			log.debug("start to compile xslJson2Xml");
+			xslJson2Xml = stf.newTemplates(new StreamSource(loadResource("xsl/json2xml.xsl")));
+			log.debug("start to compile xslLdh2Csh");
+			xslLdh2Csh = stf.newTemplates(new StreamSource(loadResource("xsl/ldh2csh.xsl")));
+			log.debug("start to compile xslXml2Json");
+			xslXml2Json = stf.newTemplates(new StreamSource(loadResource("xsl/xml2json.xsl")));
+			log.debug("start to compile xslCsh2Xml");
+			xslCsh2Xml = stf.newTemplates(new StreamSource(loadResource("xsl/pretty-xml.xsl")));
+			log.debug("start to compile xslToFhir");
+			xslToFhir = stf.newTemplates(new StreamSource(loadResource("xsl/toFhir.xsl")));
+		} catch (TransformerConfigurationException e) {
+			log.debug(e.getMessageAndLocation());
+		}
 		compiled = true;
 		log.info("compiled stylesheets");
 	}
-	void pipeToSaxon(Source input,OutputStream out) throws TransformerException {
-		if (!compiled) init();
+
+	void pipeToSeekXml(Source input, OutputStream out) throws TransformerException {
+		if (!compiled)
+			init();
 		TransformerHandler th1 = stf.newTransformerHandler(xslJson2Xml);
 		th1.setResult(new StreamResult(out));
 		Transformer t = stf.newTransformer();
 		t.transform(input, new SAXResult(th1));
-		
+
 	}
+
 	/**
 	 * 
 	 * @param input XML Source
-	 * @param out OutputStream, receiving json
+	 * @param out   OutputStream, receiving json
 	 * @throws TransformerException
-	 */	
-	void pipeToCsh(Source input,OutputStream out) throws TransformerException {
-		if (!compiled) init();
+	 */
+	void pipeToCsh(Source input, OutputStream out) throws TransformerException {
+		if (!compiled)
+			init();
 		TransformerHandler th1 = stf.newTransformerHandler(xslJson2Xml);
 		TransformerHandler th2 = stf.newTransformerHandler(xslLdh2Csh);
 		TransformerHandler th3 = stf.newTransformerHandler(xslXml2Json);
@@ -68,27 +86,30 @@ public class XslPipeline {
 		th3.setResult(new StreamResult(out));
 		Transformer t = stf.newTransformer();
 		t.transform(input, new SAXResult(th1));
-		
+
 	}
 
-	void pipeToCshXml(Source input,OutputStream out) throws TransformerException {
-		if (!compiled) init();
+	void pipeToCshXml(Source input, OutputStream out) throws TransformerException {
+		if (!compiled)
+			init();
 		TransformerHandler th1 = stf.newTransformerHandler(xslJson2Xml);
 		TransformerHandler th2 = stf.newTransformerHandler(xslLdh2Csh);
 		th1.setResult(new SAXResult(th2));
 		th2.setResult(new StreamResult(out));
 		Transformer t = stf.newTransformer();
 		t.transform(input, new SAXResult(th1));
-		
+
 	}
-/**
+
+	/**
 	 * 
 	 * @param input XML Source
-	 * @param out OutputStream, receiving xml
+	 * @param out   OutputStream, receiving xml
 	 * @throws TransformerException
-	 */	
-	void pipeToXml(Source input,OutputStream out) throws TransformerException {
-		if (!compiled) init();
+	 */
+	void pipeToXml(Source input, OutputStream out) throws TransformerException {
+		if (!compiled)
+			init();
 		TransformerHandler th1 = stf.newTransformerHandler(xslJson2Xml);
 		TransformerHandler th2 = stf.newTransformerHandler(xslLdh2Csh);
 		TransformerHandler th4 = stf.newTransformerHandler(xslCsh2Xml);
@@ -98,18 +119,34 @@ public class XslPipeline {
 		Transformer t = stf.newTransformer();
 		t.transform(input, new SAXResult(th1));
 	}
+
+	void pipeToFhir(Source input, OutputStream out) throws TransformerException {
+		if (!compiled)
+			init();
+		TransformerHandler th1 = stf.newTransformerHandler(xslJson2Xml);
+		TransformerHandler th2 = stf.newTransformerHandler(xslLdh2Csh);
+		TransformerHandler th3 = stf.newTransformerHandler(xslCsh2Xml);
+		TransformerHandler th4 = stf.newTransformerHandler(xslToFhir);
+		th1.setResult(new SAXResult(th2));
+		th2.setResult(new SAXResult(th3));
+		th3.setResult(new SAXResult(th4));
+		th4.setResult(new StreamResult(out));
+		Transformer t = stf.newTransformer();
+		t.transform(input, new SAXResult(th1));
+	}
+
 	// Maybe include
-	// https://nodedirector.bigsister.ch/refdoc/classorg_1_1json_1_1XML.html		
-	// static String org.json.XML.escape	(	String 	string	)	
-	String prepareJson(String json) {		
+	// https://nodedirector.bigsister.ch/refdoc/classorg_1_1json_1_1XML.html
+	// static String org.json.XML.escape ( String string )
+	String prepareJson(String json) {
 		return "<data>" + json.replace("<", "&lt;") + "</data>";
 	}
 
 	Source prepareJson(InputStreamReader jsonStream) throws IOException {
-		StringBuilder sb  = new StringBuilder();
+		StringBuilder sb = new StringBuilder();
 		char[] buffer = new char[1024];
-		for (int numRead; (numRead = jsonStream.read(buffer, 0, buffer.length)) > 0; ) {
-			sb.append(buffer,0,numRead);
+		for (int numRead; (numRead = jsonStream.read(buffer, 0, buffer.length)) > 0;) {
+			sb.append(buffer, 0, numRead);
 		}
 		return new StreamSource(prepareJson(sb.toString()));
 	}

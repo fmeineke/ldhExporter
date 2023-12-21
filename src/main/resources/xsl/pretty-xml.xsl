@@ -7,7 +7,7 @@
         version="3.0">
 
 <xsl:mode on-no-match="shallow-skip"/>
-<xsl:output indent="yes" omit-xml-declaration="yes" />
+<xsl:output indent="yes" omit-xml-declaration="no" />
 
 <xsl:template match="/">
 	<Resource>
@@ -18,7 +18,7 @@
 <xsl:template match="x:*[starts-with(@key,'investigation') or @key='descxription' or @key='title']" priority="2"/>
 
 <xsl:template match="x:array[@key]" priority="1">
-	<xsl:variable name="n1" select="tokenize(@key,'\.')[last()]"/>	
+	<xsl:variable name="n1" select="x:tokenize(@key,'\.')[last()]"/>	
 	
 	<xsl:for-each select="*">
 		<xsl:element name="{$n1}">
@@ -28,7 +28,7 @@
 </xsl:template>
 
 <xsl:template match="x:string[@key]" priority="1">
-	<xsl:variable name="n" select="tokenize(@key,'\.')[last()]"/>	
+	<xsl:variable name="n" select="x:tokenize(@key,'\.')[last()]"/>	
 	<xsl:if test="normalize-space(.)">
 		<xsl:element name="{$n}">
 			<xsl:value-of select="."/>
@@ -37,7 +37,7 @@
 </xsl:template>
 
 <xsl:template match="x:*[@key]">
-	<xsl:variable name="n" select="tokenize(@key,'\.')[last()]"/>	
+	<xsl:variable name="n" select="x:tokenize(@key,'\.')[last()]"/>	
 	<xsl:if test="normalize-space(.)">
 		<xsl:element name="{$n}">
 			<xsl:apply-templates/>

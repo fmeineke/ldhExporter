@@ -4,7 +4,7 @@
     xmlns:fn="http://www.w3.org/2005/xpath-functions"
     exclude-result-prefixes="fn" version="3.0">
 
-    <xsl:output indent="yes" omit-xml-declaration="yes" />
+    <xsl:output indent="yes" omit-xml-declaration="no" />
 
     <xsl:template match="/">
         <xsl:copy-of select="fn:json-to-xml(.)" />

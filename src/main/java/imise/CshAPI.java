@@ -21,6 +21,7 @@ import com.networknt.schema.ValidationMessage;
 
 public class CshAPI extends JsonCacheAPI {
 	String accessToken;
+	String api="https://csh.nfdi4health.de/api/resource/";
 
 	public CshAPI(String url) {
 		super(url);

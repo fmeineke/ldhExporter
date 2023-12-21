@@ -85,8 +85,10 @@ public class ExportHandler implements HttpHandler {
 				if (format == null)  format = "csh";
 
 
-				String url = params.get("url");
-				if (url == null) url = Main.source;
+				// ok, this is too dangerous
+//				String url = params.get("url");
+				String url = Main.source;
+//				if (url == null) url = Main.source;
 				if (url == null) {
 					throw new HttpException(HttpURLConnection.HTTP_BAD_REQUEST, "missing url");
 				}
@@ -107,31 +109,36 @@ public class ExportHandler implements HttpHandler {
 				Source s = xp.prepareJson(json);	
 
 				switch(format) {
-				case "xml":
-					t.sendResponseHeaders(HttpURLConnection.HTTP_OK,0);					
-					t.getResponseHeaders().set("Content-Type", "application/xml; charset=utf-8");
-					xp.pipeToXml(s, os);
-					break;
-				case "saxon":
-					t.sendResponseHeaders(HttpURLConnection.HTTP_OK,0);					
-					t.getResponseHeaders().set("Content-Type", "application/xml; charset=utf-8");
-					xp.pipeToSaxon(s, os);
-					break;
 				case "seek":
 					t.sendResponseHeaders(HttpURLConnection.HTTP_OK,0);					
 					t.getResponseHeaders().set("Content-Type", "application/json; charset=utf-8");
 					ObjectMapper objectMapper = new ObjectMapper();
 					os.write(objectMapper.writeValueAsBytes(json));
 					break;
-				case "csh":
+				case "seekxml":
 					t.sendResponseHeaders(HttpURLConnection.HTTP_OK,0);					
-					t.getResponseHeaders().set("Content-Type", "application/json; charset=utf-8");
-					xp.pipeToCsh(s, os);
+					t.getResponseHeaders().set("Content-Type", "application/xml; charset=utf-8");
+					xp.pipeToSeekXml(s, os);
+					break;
+				case "xml":
+					t.sendResponseHeaders(HttpURLConnection.HTTP_OK,0);					
+					t.getResponseHeaders().set("Content-Type", "application/xml; charset=utf-8");
+					xp.pipeToXml(s, os);
 					break;
 				case "cshxml":
 					t.sendResponseHeaders(HttpURLConnection.HTTP_OK,0);					
 					t.getResponseHeaders().set("Content-Type", "application/xml; charset=utf-8");
 					xp.pipeToCshXml(s, os);
+					break;
+				case "csh":
+					t.sendResponseHeaders(HttpURLConnection.HTTP_OK,0);					
+					t.getResponseHeaders().set("Content-Type", "application/json; charset=utf-8");
+					xp.pipeToCsh(s, os);
+					break;
+				case "fhir":
+					t.sendResponseHeaders(HttpURLConnection.HTTP_OK,0);					
+					t.getResponseHeaders().set("Content-Type", "application/json; charset=utf-8");
+					xp.pipeToFhir(s, os);
 					break;
 				case "cshval":
 					t.sendResponseHeaders(HttpURLConnection.HTTP_OK,0);			
