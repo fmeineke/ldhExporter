@@ -2,7 +2,7 @@ all:
 	mvn install dependency:copy-dependencies -Dmaven.test.skip=true -DoutputDirectory=target/lib
 
 run-server:
-	export LDH_SOURCE=https://ldh.zks.uni-leipzig.de && java -cp 'target/classes:target/lib/*' imise.MyServer
+	export LDH_SOURCE=https://ldh.zks.uni-leipzig.de && java -cp 'target/classes:target/lib/*' imise.Main
 run-jar:
 	java -jar target/LDHExport-1.0.jar
 build-image: 
