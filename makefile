@@ -3,8 +3,8 @@ all:
 
 run-server:
 	export LDH_SOURCE=https://ldh.zks.uni-leipzig.de && java -cp 'target/classes:target/lib/*' imise.MyServer
-runi-jar:
-	java -jar target/SeekExporter-1.0.jar
+run-jar:
+	java -jar target/LDHExport-1.0.jar
 build-image: 
 	docker build . -t fmeineke/ldh-exp:v1
 push-image:
