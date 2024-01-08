@@ -1,6 +1,9 @@
 all:
 	mvn install dependency:copy-dependencies -Dmaven.test.skip=true -DoutputDirectory=target/lib
 
+docker: 
+	make clean all build-image push-image
+
 run-server:
 	export LDH_SOURCE=https://ldh.zks.uni-leipzig.de && java -cp 'target/classes:target/lib/*' imise.Main
 run-jar:

@@ -10,7 +10,7 @@ import com.sun.net.httpserver.HttpServer;
 public class Main {
 	static String source,service; 
 	static int port=8321;
-	final static Logger log = LoggerFactory.getLogger(Main.class);
+	public final static Logger log = LoggerFactory.getLogger(Main.class);
 
 	public static void main(String[] args) throws Exception {
 
@@ -19,6 +19,8 @@ public class Main {
 
 		source = System.getenv("LDH_SOURCE");
 		log.info("default source (LDH_SOURCE) is " + (source==null?"not yet defined (no LDH_SOURCE, use url param,)":source));
+		if (source==null) source="undefined";
+
 
 		service = System.getenv("LDH_EXP");
 		if (service == null) service="http://localhost:" + port;

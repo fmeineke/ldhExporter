@@ -62,10 +62,11 @@ public class ExportHandler implements HttpHandler {
 	@Override
 	public void handle(HttpExchange t) throws IOException {
 		try (OutputStream os = t.getResponseBody()){    
-			String query = t.getRequestURI().getQuery();
+			String query = t.getRequestURI().getQuery();			
+			Main.log.info(t.getRequestMethod());
 			if (query == null) {
-				t.getResponseHeaders().set("Content-Type", "text/html; charset=utf-8");
 				t.sendResponseHeaders(HttpURLConnection.HTTP_OK,0);
+				t.getResponseHeaders().set("Content-Type", "text/html; charset=utf-8");
 				//					try (OutputStream os = t.getResponseBody()) {
 				//	getClass().getClassLoader().getResourceAsStream("index.html").transferTo(os);
 				byte[] data = getClass().getClassLoader().getResourceAsStream("index.html").readAllBytes();
@@ -84,28 +85,38 @@ public class ExportHandler implements HttpHandler {
 				String format = params.get("format");
 				if (format == null)  format = "csh";
 
-
-				// ok, this is too dangerous
-//				String url = params.get("url");
 				String url = Main.source;
-//				if (url == null) url = Main.source;
 				if (url == null) {
 					throw new HttpException(HttpURLConnection.HTTP_BAD_REQUEST, "missing url");
 				}
 				if (!isValidURL(url)) {
 					throw new HttpException(HttpURLConnection.HTTP_BAD_REQUEST, "invalid url");
 				}
-				String id = params.get("id");
-				if (id == null) {
-					throw new HttpException(HttpURLConnection.HTTP_BAD_REQUEST, "missing id");
-				} 
-				if (!id.matches("(investigations|studies)/[0-9]{1,10}")) {
-					throw new HttpException(HttpURLConnection.HTTP_BAD_REQUEST, "invalid id");
-				} 
-				//				id = "investigations/" + id + ".json";
-				id = id + ".json";
-				JsonAPI sa = new JsonAPI(url);
-				JsonNode json = sa.getResource(id);
+				JsonNode json;
+				if (t.getRequestMethod().equals("GET")) {
+					String id = params.get("id");
+					if (id == null) {						
+						throw new HttpException(HttpURLConnection.HTTP_BAD_REQUEST, "missing id");					
+					} 
+					if (!id.matches("(investigations|studies)/[0-9]{1,10}")) {
+						throw new HttpException(HttpURLConnection.HTTP_BAD_REQUEST, "invalid id");
+					} 
+					id = id + ".json";
+					JsonAPI sa = new JsonAPI(url);
+					json = sa.getResource(id);
+				} else if (t.getRequestMethod().equals("POST")) {
+					t.getRequestBody();
+					ObjectMapper map = new ObjectMapper();
+					try {
+						json = map.readTree(t.getRequestBody());	
+						if (json.isEmpty())
+							throw new HttpException(HttpURLConnection.HTTP_BAD_REQUEST, "empty body / no json content found");
+					} catch(IOException e) {
+						throw new HttpException(HttpURLConnection.HTTP_BAD_REQUEST, e.getMessage());
+					}
+				} else {
+					throw new HttpException(HttpURLConnection.HTTP_BAD_METHOD, "unsupported method");
+				}
 				Source s = xp.prepareJson(json);	
 
 				switch(format) {
