@@ -26,10 +26,7 @@ public class CshAPI extends JsonCacheAPI {
 	public CshAPI(String url) {
 		super(url);
 	}
-	public static void validate(InputStream jsonStream,OutputStream os) throws Exception {  
-
-		// create instance of the ObjectMapper class  
-		ObjectMapper objectMapper = new ObjectMapper();  
+	public static void validate(JsonNode json,OutputStream os) throws Exception {  
 		PrintStream out = new PrintStream(os);
 
 		// create an instance of the JsonSchemaFactory using version flag  
@@ -38,33 +35,31 @@ public class CshAPI extends JsonCacheAPI {
 		// store the JSON data in InputStream  
 		try (InputStream schemaStream = Thread.currentThread().getContextClassLoader().getResourceAsStream( "MDS-import.json" )) {
 
-			// read data from the stream and store it into JsonNode  
-			JsonNode json = objectMapper.readTree(jsonStream);  
-
 			// get schema from the schemaStream and store it into JsonSchema  
 			JsonSchema schema = schemaFactory.getSchema(schemaStream);  
 
 			// create set of validation message and store result in it  
 			Set<ValidationMessage> validationResult = schema.validate( json );  
 
-			// show the validation errors   
-			if (validationResult.isEmpty()) {  
+			// show all the validation error  
+			out.println("<html>");
+			out.println("<h1>CSH Validation Results</h1>");
+			out.println("<ul>");
 
-				// show custom message if there is no validation error   
-				out.println( "There are no validation errors" );  
-
-			} else {  
-
-				// show all the validation error  
-				out.println("<html>");
-				out.println("<h1>CSH Validation Results</h1>");
-				out.println("<ul>");
-				
-				validationResult.forEach(vm -> out.println("<li>"+vm.getMessage()+"</li>"));  
-				out.println("</ul></html>");
-			}  
+			if (validationResult.size() == 0) {
+				out.println("No validation errors");
+			} else {
+				validationResult.forEach(vm -> out.println("<li>"+vm.getMessage()+"</li>"));
+			}
+			out.println("</ul>");
+			out.println("</html>");
 		}
 	}  			
+
+	public static void validate(InputStream jsonStream,OutputStream os) throws Exception {  
+		validate(new ObjectMapper().readTree(jsonStream),os);
+	}  			
+
 	public void setClientId(String tokenUrl, String clientId, String clientSecret) throws Exception {
 		HttpRequest request = HttpRequest.newBuilder()
 				.POST(BodyPublishers.ofString(

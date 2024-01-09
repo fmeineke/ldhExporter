@@ -20,16 +20,6 @@
             select="map/map/map[@key='attributes']/string" />
         <xsl:apply-templates
             select="map/map/map/map[@key='extended_attributes']/map/* " />
-        <boolean>
-            <xsl:attribute name="key"
-                select="'nutritionalData'" />
-            <xsl:value-of select="'false'" />
-        </boolean>
-        <boolean>
-            <xsl:attribute name="key"
-                select="'chronicDiseases'" />
-            <xsl:value-of select="'false'" />
-        </boolean>
     </map>
 </xsl:template>
 
@@ -55,15 +45,6 @@
     </boolean>
 </xsl:template>
 
-
-<xsl:template
-    match="*[starts-with(@key,'investigation.is')]" priority="2" />
-<xsl:template match="string[@key='id' or @key='title']"
-    priority="1" />
-<xsl:template match="string[@key='description']"
-    priority="2" />
-<xsl:template match="map[@key='jsonapi']" />
-
 <xsl:template match="string[normalize-space(.)]">
     <string>
         <xsl:call-template name="setKey" />
@@ -77,6 +58,18 @@
         <xsl:apply-templates />
     </map>
 </xsl:template>
+
+
+<!-- ****************************************************************************** 
+    Remove these 
+    ************************************************************************** -->
+<xsl:template
+    match="*[starts-with(@key,'investigation.is')]" priority="2" />
+<xsl:template match="string[@key='id' or @key='title']"
+    priority="1" />
+<xsl:template match="string[@key='description']"
+    priority="2" />
+<xsl:template match="map[@key='jsonapi']" />
 
 <!-- ****************************************************************************** 
     Unclear who to blame ******************************************************************************* -->
@@ -111,7 +104,8 @@
 <!-- ****************************************************************************** 
     Repair extended metadata export flaws Problem: Some elements have to be arrays 
     rather then single items. This matches only with map having a key; they should 
-    be lifted to an array ******************************************************************************* -->
+    be lifted to an array 
+    *************************************************************************** -->
 
 <!-- Create array from single map -->
 <xsl:template
@@ -131,8 +125,6 @@ or @key='Design_eligibilityCriteria_ageMin_number_Investigation']"
    @key='Resource_titles_Investigation' 
 or @key='Resource_acronyms_Investigation'
 or @key='Resource_descriptions_Investigation'
-or @key='Resource_keywords_Investigation'
-or @key='Resource_languages_Investigation'
 or @key='Resource_contributors_Investigation'
 or @key='Resource_contributors_personal_identifiers_Investigation'
 or @key='Resource_contributors_affiliations_Investigation'
@@ -164,6 +156,35 @@ or @key='Design_eligibilityCriteria_genders_Investigation'
             <xsl:value-of select="text()" />
         </string>
     </array>
+</xsl:template>
+
+<!-- Map language codes to be in csh style-->
+<xsl:template
+    match="string[@key='Resource_acronyms_language_Investigation']
+    |string[@key='Resource_titles_language_Investigation']
+    |array[@key='Resource_languages_Investigation']/string"
+    priority="2">
+    <string>
+        <xsl:call-template name="setKey" />
+        <xsl:choose>
+            <xsl:when test="text()='English'"><xsl:text>EN (English)</xsl:text></xsl:when>
+            <xsl:otherwise><xsl:value-of select="text()"/></xsl:otherwise>
+        </xsl:choose>       
+    </string>
+</xsl:template>
+
+
+<!-- Convert String to boolean-->
+<xsl:template
+    match="string[
+   @key='Resource_nutritionalData_Investigation'
+or @key='Resource_chronicDiseases_Investigation'
+   ]"
+    priority="2">
+    <boolean>
+        <xsl:call-template name="setKey" />
+         <xsl:value-of select="'false'" />
+    </boolean>
 </xsl:template>
 
 </xsl:stylesheet>
