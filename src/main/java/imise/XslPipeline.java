@@ -35,22 +35,34 @@ public class XslPipeline {
 
 	
 	InputStream loadResource(String name) {
-		InputStream is = getClass().getClassLoader().getResourceAsStream(name);
+		InputStream is=null;
+		is = getClass().getClassLoader().getResourceAsStream(name);
+		/*
+		try {
+			
+//			is = new FileInputStream("C:\\Users\\Frank\\git\\ldhExporter\\src\\main\\resources\\" + name);
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		*/
+		log.info(name);
+		
 		if (is == null )log.debug("failed to load " + name);
 		return is;
 	}
 	public void init() throws TransformerConfigurationException {
 		try {
 			stf = (SAXTransformerFactory) TransformerFactory.newInstance();
-			log.debug("start to compile xslJson2Xml");
+			log.debug("compiling xslJson2Xml");
 			xslJson2Xml = stf.newTemplates(new StreamSource(loadResource("xsl/json2xml.xsl")));
-			log.debug("start to compile xslLdh2Csh");
+			log.debug("compiling xslLdh2Csh");
 			xslLdh2Csh = stf.newTemplates(new StreamSource(loadResource("xsl/ldh2csh.xsl")));
-			log.debug("start to compile xslXml2Json");
+			log.debug("compiling xslXml2Json");
 			xslXml2Json = stf.newTemplates(new StreamSource(loadResource("xsl/xml2json.xsl")));
-			log.debug("start to compile xslCsh2Xml");
+			log.debug("compiling xslCsh2Xml");
 			xslCsh2Xml = stf.newTemplates(new StreamSource(loadResource("xsl/pretty-xml.xsl")));
-			log.debug("start to compile xslToFhir");
+			log.debug("compiling xslToFhir");
 			xslToFhir = stf.newTemplates(new StreamSource(loadResource("xsl/toFhir.xsl")));
 		} catch (TransformerConfigurationException e) {
 			log.debug(e.getMessageAndLocation());

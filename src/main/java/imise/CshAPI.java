@@ -33,7 +33,8 @@ public class CshAPI extends JsonCacheAPI {
 		JsonSchemaFactory schemaFactory = JsonSchemaFactory.getInstance( SpecVersion.VersionFlag.V202012 );  
 
 		// store the JSON data in InputStream  
-		try (InputStream schemaStream = Thread.currentThread().getContextClassLoader().getResourceAsStream( "MDS-import.json" )) {
+		try (InputStream schemaStream = CshAPI.class.getClassLoader().getResourceAsStream( "MDS-import.json" )) {
+//		try (InputStream schemaStream = new FileInputStream("C:\\Users\\Frank\\git\\ldhExporter\\src\\main\\resources\\MDS-import.json" )) {
 
 			// get schema from the schemaStream and store it into JsonSchema  
 			JsonSchema schema = schemaFactory.getSchema(schemaStream);  

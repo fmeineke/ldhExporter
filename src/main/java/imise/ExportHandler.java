@@ -3,7 +3,6 @@ package imise;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
@@ -105,7 +104,7 @@ public class ExportHandler implements HttpHandler {
 					if (id == null) {						
 						throw new HttpException(HttpURLConnection.HTTP_BAD_REQUEST, "missing id");					
 					} 
-					if (!id.matches("(investigations|studies)/[0-9]{1,10}")) {
+					if (!id.matches("(projects|investigations|studies)/[0-9]{1,10}")) {
 						throw new HttpException(HttpURLConnection.HTTP_BAD_REQUEST, "invalid id");
 					} 
 					id = id + ".json";

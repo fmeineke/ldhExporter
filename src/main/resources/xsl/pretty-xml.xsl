@@ -1,12 +1,12 @@
-<xsl:stylesheet
-	xmlns:x="http://www.w3.org/2005/xpath-functions"
+<xsl:stylesheet version="2.0" 
+    xmlns:x="http://www.w3.org/2005/xpath-functions"
 	xmlns:math="http://www.w3.org/2005/xpath-functions/math"
-        xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
+    xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
 	xmlns:xs="http://www.w3.org/2001/XMLSchema"
-	exclude-result-prefixes="xs math x" 
-        version="3.0">
-
+	exclude-result-prefixes="xs math x">
+<!-- 
 <xsl:mode on-no-match="shallow-skip"/>
+-->
 <xsl:output indent="yes" omit-xml-declaration="no" />
 
 <xsl:template match="/">
