@@ -13,7 +13,7 @@ public abstract class JsonCacheAPI extends JsonAPI {
 	Map<String, JsonNode> jsonCache = new HashMap<>();
 	final static Logger log = LoggerFactory.getLogger(JsonCacheAPI.class);
 
-	public JsonCacheAPI(String url) {
+	public JsonCacheAPI(String url) throws HttpException {
 		super (url);
 	}
 
@@ -25,7 +25,7 @@ public abstract class JsonCacheAPI extends JsonAPI {
 		}
 	}
 	@Override
-	public JsonNode getResource(String path) throws Exception {
+	public JsonNode getResource(String path) throws HttpException {
 		if (jsonCache.containsKey(path))
 			return jsonCache.get(path);
 		
@@ -36,24 +36,24 @@ public abstract class JsonCacheAPI extends JsonAPI {
 	}
 
 	@Override
-	public JsonNode postResource(String path,JsonNode j) throws Exception {
+	public JsonNode postResource(String path,JsonNode j) throws HttpException {
 		JsonNode nodeNew = super.postResource(path, j);
 		if (nodeNew != null)
 			jsonCache.put(path, nodeNew);
 		return nodeNew;
 	}
-	@Override
-	public JsonNode patchResource(String path,JsonNode j) throws Exception {
-		JsonNode nodeNew = super.patchResource(path, j);
-		if (nodeNew != null)
-			jsonCache.put(path, nodeNew);
-		return nodeNew;
-	}
-	@Override
-	public boolean deleteResource(String path) throws Exception {
-		boolean ret = super.deleteResource(path);
-		if (ret) jsonCache.remove(path);
-		return ret;
-	}
+//	@Override
+//	public JsonNode patchResource(String path,JsonNode j) throws JsonAPIException {
+//		JsonNode nodeNew = super.patchResource(path, j);
+//		if (nodeNew != null)
+//			jsonCache.put(path, nodeNew);
+//		return nodeNew;
+//	}
+//	@Override
+//	public boolean deleteResource(String path) throws JsonAPIException {
+//		boolean ret = super.deleteResource(path);
+//		if (ret) jsonCache.remove(path);
+//		return ret;
+//	}
 	
 }

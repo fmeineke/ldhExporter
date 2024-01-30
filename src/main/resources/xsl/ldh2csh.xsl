@@ -16,7 +16,9 @@
 <xsl:variable name="resource" select="concat('_',fn:tokenize($r1,'_')[last()])"/>
 
 <xsl:template match="/">
+<map>
     <map>
+        <xsl:attribute name="key" select="'resource'"/>
         <xsl:apply-templates
             select="map/map/string[@key='id']" />
             <!-- 
@@ -25,6 +27,7 @@
              -->
         <xsl:apply-templates
             select="map/map/map/map[@key='extended_attributes']/map/* " />
+    </map>
     </map>
 </xsl:template>
 

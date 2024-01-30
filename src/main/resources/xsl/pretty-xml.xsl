@@ -10,9 +10,7 @@
 <xsl:output indent="yes" omit-xml-declaration="no" />
 
 <xsl:template match="/">
-	<Resource>
-		<xsl:apply-templates/>
-	</Resource>
+	<xsl:apply-templates/>
 </xsl:template>
 
 <xsl:template match="x:*[starts-with(@key,'investigation') or @key='descxription' or @key='title']" priority="2"/>
