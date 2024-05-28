@@ -25,6 +25,7 @@ public class ServletLdhExport extends HttpServlet {
 	final static String XML = "application/xml; charset=utf-8";
 
 	XslPipeline xp = LDHExport.xp;
+	
 	JsonMapper jsonMapper = JsonMapper.builder().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
 			.build();
 
@@ -33,7 +34,7 @@ public class ServletLdhExport extends HttpServlet {
 		ByteArrayOutputStream data = new ByteArrayOutputStream();
 		if (format == null) format = "csh";
 
-		try {
+	try {
 			switch (format) {
 			case "seek":
 				try (PrintWriter p = new PrintWriter(data)) { 
@@ -42,7 +43,7 @@ public class ServletLdhExport extends HttpServlet {
 				response.setContentType(JSON);
 				break;
 			case "seekxml":
-				xp.pipeToXml(source, data);
+				xp.pipeToSeekXml(source, data);
 				response.setContentType(XML);
 				break;
 			case "xml":
@@ -55,7 +56,7 @@ public class ServletLdhExport extends HttpServlet {
 				break;			
 			case "fhir":
 				xp.pipeToFhir(source, data);
-				response.setContentType(JSON);
+				response.setContentType(XML);
 				break;
 			case "csh":
 				xp.pipeToCsh(source, data);
@@ -94,6 +95,7 @@ public class ServletLdhExport extends HttpServlet {
 		}
 	}
 
+	
 	public static JsonNode fetchFromPath(String pathInfo) throws HttpException {
 		if (pathInfo == null || pathInfo.length()==1) throw new HttpException(0,"missing id");
 		return fetch(pathInfo.substring(1));

@@ -26,9 +26,23 @@
             select="map/map/map[@key='attributes']/string" />
              -->
         <xsl:apply-templates
-            select="map/map/map/map[@key='extended_attributes']/map/* " />
+            select="map/map/map/map[@key='extended_attributes']/map " />
+         
     </map>
-    </map>
+</map>
+</xsl:template>
+
+<xsl:template match="map[@key='attribute_map']" priority="2">
+     <array key="ids">
+        <map>
+            <xsl:variable name="self" select="//string[@key='self']/text()"/>
+            <xsl:variable name="base_url" select="//string[@key='base_url']/text()"/>
+            <string key="identifier"><xsl:value-of select="concat($base_url,$self)"/></string>
+            <string key="scheme">URL</string>
+            <string key="relationType">A is identical to B</string>
+        </map>
+    </array>
+    <xsl:apply-templates/>
 </xsl:template>
 
 <!-- convert key (e.g. "Resource_classification_type_Project" to "type" -->

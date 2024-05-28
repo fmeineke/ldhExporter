@@ -1,7 +1,14 @@
 package imise;
 
 import org.eclipse.jetty.ee10.servlet.ServletContextHandler;
+import org.eclipse.jetty.http.HttpVersion;
+import org.eclipse.jetty.server.HttpConfiguration;
+import org.eclipse.jetty.server.HttpConnectionFactory;
+import org.eclipse.jetty.server.SecureRequestCustomizer;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.ServerConnector;
+import org.eclipse.jetty.server.SslConnectionFactory;
+import org.eclipse.jetty.util.ssl.SslContextFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,6 +42,30 @@ public class LDHExport {
 
 
 		server = new Server(Integer.parseInt(System.getProperty("LDH_EXP_PORT")));
+//		{
+//			final HttpConfiguration httpConfiguration = new HttpConfiguration();
+//			httpConfiguration.setSecureScheme("https");
+//			int httpsPort = 8084;
+//			int httpPort = 8083;
+//			httpConfiguration.setSecurePort(httpsPort);
+//
+//			final ServerConnector http = new ServerConnector(server,
+//			    new HttpConnectionFactory(httpConfiguration));
+//			http.setPort(httpPort);
+//			server.addConnector(http);
+//			
+//
+//			String keyStorePassword = null;
+//			final SslContextFactory.Server sslContextFactory = new SslContextFactory.Server();
+//			sslContextFactory.setKeyStorePassword(keyStorePassword);
+//			final HttpConfiguration httpsConfiguration = new HttpConfiguration(httpConfiguration);
+//			httpsConfiguration.addCustomizer(new SecureRequestCustomizer());
+//			final ServerConnector httpsConnector = new ServerConnector(server,
+//			    new SslConnectionFactory(sslContextFactory, HttpVersion.HTTP_1_1.asString()),
+//			    new HttpConnectionFactory(httpsConfiguration));
+//			httpsConnector.setPort(httpsPort);
+//			server.addConnector(httpsConnector);
+//		}
 		ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
 		context.setContextPath("/");
 		context.addServlet(ServletLdhExport.class, "/export/*");
@@ -42,6 +73,7 @@ public class LDHExport {
 		context.addServlet(ServletCshUser.class, "/user");
 		context.addServlet(ServletCshPublish.class, "/publish/*");
 		context.addServlet(ServletValidate.class, "/validate/*");
+		context.addServlet(ServletCshDelete.class, "/delete/*");
 		context.addServlet(ServletIndex.class, "/");
 
 		server.setHandler(context);
