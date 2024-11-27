@@ -12,6 +12,8 @@ import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.json.JsonMapper;
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+import com.fasterxml.jackson.dataformat.xml.ser.ToXmlGenerator;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
@@ -46,6 +48,14 @@ public class ServletLdhExport extends HttpServlet {
 				xp.pipeToSeekXml(source, data);
 				response.setContentType(XML);
 				break;
+			case "prettyxml":
+	            XmlMapper xmlMapper = new XmlMapper();
+	            xmlMapper.configure( ToXmlGenerator.Feature.WRITE_XML_DECLARATION, true );
+				response.setContentType(XML);
+				response.setStatus(HttpServletResponse.SC_OK);
+	            xmlMapper.writeValue(response.getWriter(), json);
+	            return;
+				//break;
 			case "xml":
 				xp.pipeToXml(source,data);
 				response.setContentType(XML);

@@ -114,7 +114,9 @@ public class JsonAPI {
 		log.debug(request.toString());
 		try {
 			HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-			if (response.statusCode() == HttpURLConnection.HTTP_OK) return response.body();
+			if (response.statusCode() == HttpURLConnection.HTTP_OK) {
+				return response.body();
+			}
 			throw new HttpException(response.statusCode(),response.body());		
 		} catch (IOException e) {
 			throw new HttpException(0,e.getMessage());		
@@ -145,7 +147,10 @@ public class JsonAPI {
 
 	public JsonNode getResource(String path) throws HttpException {
 		try {
-			return jsonMapper.readTree(getResourceAsString(path));
+			String s = getResourceAsString(path);
+			// TODO Not proud of it.. but what if json contains & json-to-xml would fail
+			s = s.replaceAll("&", "&amp;");
+			return jsonMapper.readTree(s);
 		} catch(HttpException e) {
 			throw e;
 		} catch (JsonMappingException e) {

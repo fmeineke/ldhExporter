@@ -29,6 +29,7 @@ public class XslPipeline {
 	Templates xslXml2Json;
 	Templates xslCsh2Xml;
 	Templates xslToFhir;
+	Templates xslCtg2Ldh;
 	SAXTransformerFactory stf;
 	final static Logger log = LoggerFactory.getLogger(XslPipeline.class);
 
@@ -51,11 +52,20 @@ public class XslPipeline {
 			xslCsh2Xml = stf.newTemplates(new StreamSource(loadResource("xsl/pretty-xml.xsl")));
 			log.debug("compiling xslToFhir");
 			xslToFhir = stf.newTemplates(new StreamSource(loadResource("xsl/toFhir.xsl")));
+			log.debug("compiling ctg2seek");
+			xslCtg2Ldh = stf.newTemplates(new StreamSource(loadResource("xsl/ctg2seek.xsl")));
 		} catch (TransformerConfigurationException e) {
 			log.debug(e.getMessageAndLocation());
 			throw e;
 		}
 		log.info("compiled stylesheets");
+	}
+
+	public void pipeCtgLdh(Source input, OutputStream out) throws TransformerException {
+		TransformerHandler th1 = stf.newTransformerHandler(xslCtg2Ldh);
+		th1.setResult(new StreamResult(out));
+		Transformer t = stf.newTransformer();
+		t.transform(input, new SAXResult(th1));
 	}
 
 	public void pipeToSeekXml(Source input, OutputStream out) throws TransformerException {

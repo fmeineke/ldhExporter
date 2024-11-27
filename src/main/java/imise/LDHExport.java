@@ -67,6 +67,7 @@ public class LDHExport {
 		context.addServlet(ServletCshPublish.class, "/publish/*");
 		context.addServlet(ServletValidate.class, "/validate/*");
 		context.addServlet(ServletCshDelete.class, "/delete/*");
+		context.addServlet(ServletLdhImportCTG.class, "/ctg/*");
 		context.addServlet(ServletIndex.class, "/");
 
 		server.setHandler(context);
