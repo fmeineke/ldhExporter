@@ -104,15 +104,16 @@
     priority="2">
     <string>
         <xsl:call-template name="setKey" />
-        <!-- Reactivate for exceptions of general mapping rule 
         <xsl:choose>
             <xsl:when test="text()='English'"><xsl:text>EN (English)</xsl:text></xsl:when>
-            <xsl:when test="text()='German'"><xsl:text>GE (German)</xsl:text></xsl:when>
+            <xsl:when test="text()='German'"><xsl:text>DE (German)</xsl:text></xsl:when>
             <xsl:when test="text()='French'"><xsl:text>FR (French)</xsl:text></xsl:when>
             <xsl:otherwise><xsl:value-of select="fn:concat(fn:upper-case(fn:substring(text(),1,2)),' (',text(),')')"/></xsl:otherwise>
         </xsl:choose>       
-         -->
+        <!-- Reactivate for exceptions of general mapping rule 
+        Falsch! German ist NICHT GE (German)
         <xsl:value-of select="fn:concat(fn:upper-case(fn:substring(text(),1,2)),' (',text(),')')"/>
+         -->
     </string>
 </xsl:template>
 
