@@ -93,6 +93,18 @@
    </string>
 </xsl:template>
 
+<!-- Patch wrong ISO  3166 names-->
+<xsl:template
+    match="array[@key=concat('Design_population_countries',$resource)]/string" priority="2">
+    <string>
+        <xsl:call-template name="setKey" />
+        <xsl:choose>
+            <xsl:when test="text()='United States'"><xsl:text>United States of America</xsl:text></xsl:when>
+            <xsl:when test="text()='United Kingdom'"><xsl:text>United Kingdom of Great Britain and Northern Ireland</xsl:text></xsl:when>
+            <xsl:otherwise><xsl:value-of select="text()"/></xsl:otherwise>
+        </xsl:choose>         
+    </string>
+</xsl:template>
 
 <!-- Map language codes to be in csh style (e.g. "English" to "EN (English)" -->
 <xsl:template
