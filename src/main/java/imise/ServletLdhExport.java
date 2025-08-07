@@ -113,7 +113,8 @@ public class ServletLdhExport extends HttpServlet {
 	public static JsonNode fetch(String id) throws HttpException {
 		String ldhUrl = System.getProperty("LDH_SOURCE");
 		JsonAPI api = new JsonAPI(ldhUrl);
-		String url = id + ".json";
+//		String url = id + ".json";
+		String url = id;
 		return api.getResource(url);
 	}
 	

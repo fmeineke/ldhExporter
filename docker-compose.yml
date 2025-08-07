@@ -1,6 +1,6 @@
 services:
   exporter:
-    image: fmeineke/ldh-exp:v1
+    image: fmeineke/ldh-exp:v2.3
     restart: unless-stopped
     environment:
         LDH_SOURCE: "https://ldh.zks.uni-leipzig.de"

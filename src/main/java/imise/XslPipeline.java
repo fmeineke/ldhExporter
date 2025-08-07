@@ -26,6 +26,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 public class XslPipeline {
 	Templates xslJson2Xml;
 	Templates xslLdh2Csh;
+	Templates xslLdh2CshNew;
 	Templates xslXml2Json;
 	Templates xslCsh2Xml;
 	Templates xslToFhir;
@@ -46,6 +47,8 @@ public class XslPipeline {
 			xslJson2Xml = stf.newTemplates(new StreamSource(loadResource("xsl/json2xml.xsl")));
 			log.debug("compiling xslLdh2Csh");
 			xslLdh2Csh = stf.newTemplates(new StreamSource(loadResource("xsl/ldh2csh.xsl")));
+			log.debug("compiling xslLdh2CshNew");
+			xslLdh2CshNew = stf.newTemplates(new StreamSource(loadResource("xsl/ldh2cshNew.xsl")));
 			log.debug("compiling xslXml2Json");
 			xslXml2Json = stf.newTemplates(new StreamSource(loadResource("xsl/xml2json.xsl")));
 			log.debug("compiling xslCsh2Xml");
@@ -63,6 +66,13 @@ public class XslPipeline {
 
 	public void pipeCtgLdh(Source input, OutputStream out) throws TransformerException {
 		TransformerHandler th1 = stf.newTransformerHandler(xslCtg2Ldh);
+		th1.setResult(new StreamResult(out));
+		Transformer t = stf.newTransformer();
+		t.transform(input, new SAXResult(th1));
+	}
+
+	public void pipeLdhXMLCshXML(Source input, OutputStream out) throws TransformerException {
+		TransformerHandler th1 = stf.newTransformerHandler(xslLdh2CshNew);
 		th1.setResult(new StreamResult(out));
 		Transformer t = stf.newTransformer();
 		t.transform(input, new SAXResult(th1));

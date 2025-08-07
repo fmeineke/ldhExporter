@@ -26,8 +26,7 @@
             select="map/map/map[@key='attributes']/string" />
              -->
         <xsl:apply-templates
-            select="map/map/map/map[@key='extended_attributes']/map " />
-         
+            select="map/map/map/map[@key='extended_attributes']/map " />         
     </map>
 </map>
 </xsl:template>
@@ -48,12 +47,16 @@
 <!-- convert key (e.g. "Resource_classification_type_Project" to "type" -->
 <xsl:template name="setKey">
     <xsl:if test="@key">
+    <!-- 
         <xsl:attribute name="key"
             select="fn:tokenize(fn:replace(@key,$resource,''),'_')[last()]" />
+      -->
+        <xsl:attribute name="key"
+            select="fn:tokenize(@key,'_')[last()-1]" />
     </xsl:if>
 </xsl:template>
 
-<xsl:template match="*[normalize-space(.)]">
+<xsl:template match="*[normalize-space(.)]" priority="-2">
     <xsl:element name="{fn:name()}">
         <xsl:call-template name="setKey" />
         <xsl:apply-templates />    
@@ -63,21 +66,17 @@
 <!-- ****************************************************************************** 
     Remove SEEK specific metadata and data
     ************************************************************************** -->
-<xsl:template
-    match="*[starts-with(@key,'investigation.is')]" priority="2" />
-<xsl:template match="string[@key='id' or @key='title' ]"
-    priority="1" />
-<xsl:template match="string[@key='description']"
-    priority="2" />
-<xsl:template match="map[@key='jsonapi']" />
+<xsl:template match="*[starts-with(@key,'investigation.is')]" priority="2"/>
+<xsl:template match="string[@key='id' or @key='title' ]" priority="2"/>
+<xsl:template match="string[@key='description']" priority="2"/>
+<xsl:template match="map[@key='jsonapi']" priority="2"/>
 
 <!-- ***************************************************************************** --> 
 <!-- Exceptions --> 
 <!-- ***************************************************************************** --> 
 
 <!-- Design is expected to be lower case -->
-<xsl:template match="map[@key=concat('Design',$resource)]"
-    priority="2">
+<xsl:template match="map[@key=concat('Design',$resource)]">
     <map>
         <xsl:attribute name="key" select="'design'" />
         <xsl:apply-templates />      
@@ -86,7 +85,7 @@
 
 <!-- single instead of array -->
 <xsl:template
-    match="array[@key=concat('Design_centers',$resource)]" priority="2">
+    match="array[@key=concat('Design_centers',$resource)]">
     <string>    
         <xsl:call-template name="setKey" />
         <xsl:value-of select="string/text()"/>
@@ -95,7 +94,7 @@
 
 <!-- Patch wrong ISO  3166 names-->
 <xsl:template
-    match="array[@key=concat('Design_population_countries',$resource)]/string" priority="2">
+    match="array[@key=concat('Design_population_countries',$resource)]/string">
     <string>
         <xsl:call-template name="setKey" />
         <xsl:choose>
@@ -112,8 +111,7 @@
     @key=concat('Resource_acronyms_language',$resource)
     or @key=concat('Resource_titles_language',$resource)
     or @key=concat('Resource_descriptions_language',$resource)]  
-    |array[@key=concat('Resource_languages',$resource)]/string"
-    priority="2">
+    |array[@key=concat('Resource_languages',$resource)]/string">
     <string>
         <xsl:call-template name="setKey" />
         <xsl:choose>
@@ -122,13 +120,24 @@
             <xsl:when test="text()='French'"><xsl:text>FR (French)</xsl:text></xsl:when>
             <xsl:otherwise><xsl:value-of select="fn:concat(fn:upper-case(fn:substring(text(),1,2)),' (',text(),')')"/></xsl:otherwise>
         </xsl:choose>       
-        <!-- Reactivate for exceptions of general mapping rule 
-        Falsch! German ist NICHT GE (German)
-        <xsl:value-of select="fn:concat(fn:upper-case(fn:substring(text(),1,2)),' (',text(),')')"/>
-         -->
     </string>
 </xsl:template>
 
-
+<!-- LDH/SEEK does not support array of simple strings  -->
+<xsl:template
+    match="map/string[
+    @key=concat('Resource_contributors_organisational_fundingIds',$resource)
+    or @key=concat('Design_hypotheses',$resource)
+    or @key=concat('Design_interventions_armsLabel',$resource)
+    or @key=concat('Design_exposures_groupsLabel',$resource)]">
+    <array>
+        <xsl:call-template name="setKey" />
+        <xsl:for-each select="tokenize(text(),'[;,]')">
+            <string>
+                <xsl:value-of select="normalize-space(.)"/>
+            </string>
+         </xsl:for-each>      
+    </array>
+</xsl:template>
 </xsl:stylesheet>
 
