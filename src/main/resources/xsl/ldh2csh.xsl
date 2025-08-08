@@ -130,14 +130,16 @@
     or @key=concat('Design_hypotheses',$resource)
     or @key=concat('Design_interventions_armsLabel',$resource)
     or @key=concat('Design_exposures_groupsLabel',$resource)]">
-    <array>
-        <xsl:call-template name="setKey" />
-        <xsl:for-each select="tokenize(text(),'[;,]')">
-            <string>
-                <xsl:value-of select="normalize-space(.)"/>
-            </string>
-         </xsl:for-each>      
-    </array>
+    <xsl:if test="normalize-space(text())">
+	    <array>
+	        <xsl:call-template name="setKey" />
+	        <xsl:for-each select="tokenize(text(),'[;,]')">
+	            <string>
+	                <xsl:value-of select="normalize-space(.)"/>
+	            </string>
+	         </xsl:for-each>      
+	    </array>
+    </xsl:if>
 </xsl:template>
 </xsl:stylesheet>
 
