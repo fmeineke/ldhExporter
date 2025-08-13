@@ -139,5 +139,13 @@
          </xsl:for-each>      
     </array>
 </xsl:template>
+
+<!-- Remove Space in "Other "  -->
+<xsl:template
+    match="map/string[
+    @key=concat('Design_outcomes_type',$resource)]/text()" >
+    <xsl:value-of select="normalize-space(.)"/>
+</xsl:template>
+
 </xsl:stylesheet>
 
