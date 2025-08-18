@@ -70,6 +70,9 @@
 <xsl:template match="string[@key='id' or @key='title' ]" priority="2"/>
 <xsl:template match="string[@key='description']" priority="2"/>
 <xsl:template match="map[@key='jsonapi']" priority="2"/>
+<!-- 
+<xsl:template match="null" priority="2"/>
+-->
 
 <!-- ***************************************************************************** --> 
 <!-- Exceptions --> 
@@ -124,11 +127,12 @@
 </xsl:template>
 
 <!-- LDH/SEEK does not support array of simple strings  -->
+<!-- or @key=concat('Design_interventions_armsLabel',$resource) -->
+
 <xsl:template
     match="map/string[
     @key=concat('Resource_contributors_organisational_fundingIds',$resource)
     or @key=concat('Design_hypotheses',$resource)
-    or @key=concat('Design_interventions_armsLabel',$resource)
     or @key=concat('Design_exposures_groupsLabel',$resource)]">
     <xsl:if test="normalize-space(.)!=''">
         <array>
