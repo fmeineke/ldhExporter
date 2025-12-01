@@ -8,6 +8,9 @@ import java.io.PrintWriter;
 import javax.xml.transform.Source;
 import javax.xml.transform.TransformerException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -25,6 +28,7 @@ public class ServletLdhExport extends HttpServlet {
 	final static String JSON = "application/json; charset=utf-8";
 	final static String HTML = "text/html; charset=utf-8";
 	final static String XML = "application/xml; charset=utf-8";
+	final static Logger log = LoggerFactory.getLogger(LDHExport.class);
 
 	XslPipeline xp = LDHExport.xp;
 	
@@ -113,9 +117,8 @@ public class ServletLdhExport extends HttpServlet {
 	public static JsonNode fetch(String id) throws HttpException {
 		String ldhUrl = System.getProperty("LDH_SOURCE");
 		JsonAPI api = new JsonAPI(ldhUrl);
-//		String url = id + ".json";
-		String url = id;
-		return api.getResource(url);
+		// id is complete pathInfo like "projects/23"
+		return api.getResource(id);
 	}
 	
 	public static JsonNode fetch(InputStream is) throws IOException {

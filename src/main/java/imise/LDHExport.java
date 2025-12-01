@@ -1,5 +1,7 @@
 package imise;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Properties;
 
 import org.eclipse.jetty.ee10.servlet.ServletContextHandler;
@@ -12,7 +14,29 @@ public class LDHExport {
 
 	final static Logger log = LoggerFactory.getLogger(LDHExport.class);
 	final static Properties prop = new Properties();
+	public static void loadProperties(String fileName) {
+        //Properties properties = new Properties();
+        
+        // 1. Get the ClassLoader
+        ClassLoader classLoader = LDHExport.class.getClassLoader();
 
+        // 2. Use getResourceAsStream to find the file relative to the classpath root
+        try (InputStream input = classLoader.getResourceAsStream(fileName)) {
+            
+            if (input == null) {
+                System.err.println("❌ Error: Resource file '" + fileName + "' not found on the classpath.");
+                // Handle the error (e.g., throw a custom exception)
+                return;
+            }
+
+            // 3. Load the properties
+            prop.load(input);
+            
+            System.out.println("✅ Properties loaded successfully.");
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+	}
 	/**
 	 * Platz 1: System.Env
 	 * Platz 2: Properties
@@ -35,7 +59,8 @@ public class LDHExport {
 		server.stop();
 	}
 	public static void main(String[] args) throws Exception {
-		prop.load(Thread.currentThread().getContextClassLoader().getResourceAsStream("config.properties"));		
+//		prop.load(Thread.currentThread().getContextClassLoader().getResourceAsStream("config.properties"));		
+		loadProperties("config.properties");
 		xp = new XslPipeline();
 		copy("LDH_EXP_PORT","8083");
 		copy("LDH_EXP","http://localhost" + (System.getProperty("LDH_EXP_PORT")==null?"":":"+System.getProperty("LDH_EXP_PORT")));

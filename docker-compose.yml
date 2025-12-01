@@ -1,9 +1,10 @@
 services:
   exporter:
-    image: fmeineke/ldh-exp:v2.3
+    image: fmeineke/ldh-exp:v2.6
     restart: unless-stopped
     environment:
-        LDH_SOURCE: "https://ldh.zks.uni-leipzig.de"
-        LDH_EXP: "https://ldh-test.zks.uni-leipzig.de"
+      - LDH_EXP="https://ldh-test.zks.uni-leipzig.de"
+      - LDH_SOURCxE="https://ldh-test.zks.uni-leipzig.de"
+      - LDH_SOURCE=http://exporter:8083
     ports:
       - 3011:8083

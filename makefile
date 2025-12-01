@@ -1,4 +1,4 @@
-IMAGE_TAG=fmeineke/ldh-exp:v2.3
+IMAGE_TAG=fmeineke/ldh-exp:v2.6
 
 build-jar:
 	mvn install dependency:copy-dependencies -DoutputDirectory=target/lib
@@ -18,7 +18,10 @@ push-image:
 	docker push $(IMAGE_TAG)
 
 run-image:
-	docker run $(IMAGE_TAG)
+	docker run -e $(IMAGE_TAG)
+
+run-compose:
+	docker compose up
 
 unused:
 	mvn dependency:analyze -DignoreUnusedRuntime=true
