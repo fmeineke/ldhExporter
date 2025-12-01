@@ -131,7 +131,7 @@
     @key=concat('Resource_contributors_organisational_fundingIds',$resource)
     or @key=concat('Design_hypotheses',$resource)
     or @key=concat('Design_exposures_groupsLabel',$resource)]">
-    <xsl:if test="normalize-space(text())">
+    <xsl:if test="normalize-space(.)!=''">
 	    <array>
 	        <xsl:call-template name="setKey" />
 	        <xsl:for-each select="tokenize(text(),'[;,]')">
