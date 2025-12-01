@@ -6,21 +6,18 @@
     <h2>API</h2>
     
     <ul>
-        <li>GET  /export/id&format=[seek|csh|xml|cshval] (Default:<b>csh</b>)</li>
-        <li>POST /export/id&format=[seek|csh|xml|cshval] (Default:<b>csh</b>, SEEK json in body)</li>
-        <li>GET  /validate/id</li>
+        <li>POST /export?format=[seek|csh|xml|cshval] (Default:<b>csh</b>, SEEK json in body)</li>
         <li>POST /validate (SEEK json in body)</li>
-        <li>POST /publish/id  (requires ${CLIENT_ID} secret)</li>
-        <li>POST /publish  (requires ${CLIENT_ID} secret,  SEEK json in body)</li>
-        <li>GET  /stats</li>
-        <li>GET  /user list published studies (requires ${CLIENT_ID} secret)</li>
-        
-        GET: id=[investigations|studies|projects]/&lt;number&gt; where json is retrieved from <b>${LDH_SOURCE}</b>.; </li>
     </ul>
     
-    <h2>Example</h2>
+    <h2>Example for Testserver ${LDH_SOURCE}</h2>
     <p> 
         <ul>
+            <li>
+                <tt>curl ${LDH_SOURCE}/projects/2.json > data.json</tt>
+                <br>
+                <tt>curl -X POST -H "Content-Type: application/json" -d"@data.json" "${LDH_SOURCE}/export?format=xml"</tt>
+            </li>
             <li>GET <a href="${LDH_EXP}/export/projects/2">${LDH_EXP}/export/projects/2</a></li>
             <li>GET <a href="${LDH_EXP}/export/projects/2?format=seek">${LDH_EXP}/export/projects/2?format=seek</a></li>
             <li>GET <a href="${LDH_EXP}/export/projects/2?format=seekxml">${LDH_EXP}/export/projects/2?format=seekxml</a></li>
@@ -28,12 +25,9 @@
             <li>GET <a href="${LDH_EXP}/export/projects/2?format=csh">${LDH_EXP}/export/projects/2?format=csh</a></li>
             <li>GET <a href="${LDH_EXP}/export/projects/2?format=xml">${LDH_EXP}/export/projects/2?format=xml</a></li>
             <li>GET <a href="${LDH_EXP}/validate/projects/2">${LDH_EXP}/validate/projects/2</a></li>
-            <li>GET <a href="${LDH_EXP}/stats">${LDH_EXP}/stats</a></li>
-            <li>GET <a href="${LDH_EXP}/user">${LDH_EXP}/user</a> </li>
-            <li>POST <a href="${LDH_EXP}/publish/projects/2">${LDH_EXP}/publish/projects/2</a> (requires ${CLIENT_ID} secret)</li>
         </ul>
     </p>
     <hr/>
-Version 07.08.2025 &#169; F. Meineke for <a href="https://www.nfdi4health.de/">NFDI4Health</a>
+Version 01.12.2025 &#169; F. Meineke for <a href="https://www.nfdi4health.de/">NFDI4Health</a>
 </body>
 </html>
