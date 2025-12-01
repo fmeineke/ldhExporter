@@ -148,8 +148,9 @@ public class JsonAPI {
 	public JsonNode getResource(String path) throws HttpException {
 		try {
 			String s = getResourceAsString(path);
-			// TODO Not proud of it.. but what if json contains & json-to-xml would fail
-			s = s.replaceAll("&", "&amp;");
+			// TODO Not proud of it.. but if json contains & json-to-xml would fail
+			// 1.12.2025: found this u0026 for first time; remarkable 4-fold quoting necessary
+			s = s.replaceAll("&|\\\\u0026", "&amp;");
 			return jsonMapper.readTree(s);
 		} catch(HttpException e) {
 			throw e;
@@ -214,7 +215,7 @@ public class JsonAPI {
 		}
 	}	
 
-	
+
 	//	public JsonNode patchResource(String id,JsonNode j) throws JsonAPIException {
 	//	    HttpRequest request = HttpRequest.newBuilder()
 	//				.method("PATCH",BodyPublishers.ofString(j.toString()))
