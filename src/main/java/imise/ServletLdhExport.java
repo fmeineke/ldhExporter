@@ -108,7 +108,6 @@ public class ServletLdhExport extends HttpServlet {
 			response.sendError(e.getCode(),e.getMessage());
 		}
 	}
-
 	
 	public static JsonNode fetchFromPath(String pathInfo) throws HttpException {
 		if (pathInfo == null || pathInfo.length()==1) throw new HttpException(0,"missing id");

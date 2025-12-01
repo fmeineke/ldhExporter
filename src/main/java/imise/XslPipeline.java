@@ -143,11 +143,13 @@ public class XslPipeline {
 		t.transform(input, new SAXResult(th1));
 	}
 
-	// Maybe include
-	// https://nodedirector.bigsister.ch/refdoc/classorg_1_1json_1_1XML.html
-	// static String org.json.XML.escape ( String string )
-	String prepareJson(String json) {
-		return "<data>" + json.replace("<", "&lt;") + "</data>";
+	/**
+	 * 
+	 * @param s
+	 * @return json might include & or < 
+	 */
+	String prepareJson(String s) {
+		return "<data>" + s.replaceAll("&|\\\\u0026", "&amp;").replace("<", "&lt;") + "</data>";
 	}
 
 	Source prepareJson(InputStreamReader jsonStream) throws IOException {

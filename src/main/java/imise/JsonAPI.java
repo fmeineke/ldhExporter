@@ -148,10 +148,7 @@ public class JsonAPI {
 	public JsonNode getResource(String path) throws HttpException {
 		try {
 			String s = getResourceAsString(path);
-			// TODO Not proud of it.. but if json contains & json-to-xml would fail
-			// 1.12.2025: found this u0026 for first time; remarkable 4-fold quoting necessary
-			s = s.replaceAll("&|\\\\u0026", "&amp;");
-			return jsonMapper.readTree(s);
+			return jsonMapper.readTree(getResourceAsString(path));
 		} catch(HttpException e) {
 			throw e;
 		} catch (JsonMappingException e) {
