@@ -10,32 +10,23 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class LDHExport {
-	static XslPipeline xp; 
+	static XslPipeline xp;
 
 	final static Logger log = LoggerFactory.getLogger(LDHExport.class);
 	final static Properties prop = new Properties();
 	public static void loadProperties(String fileName) {
-        //Properties properties = new Properties();
-        
-        // 1. Get the ClassLoader
-        ClassLoader classLoader = LDHExport.class.getClassLoader();
-
-        // 2. Use getResourceAsStream to find the file relative to the classpath root
-        try (InputStream input = classLoader.getResourceAsStream(fileName)) {
-            
-            if (input == null) {
-                System.err.println("❌ Error: Resource file '" + fileName + "' not found on the classpath.");
-                // Handle the error (e.g., throw a custom exception)
-                return;
-            }
-
-            // 3. Load the properties
-            prop.load(input);
-            
-            System.out.println("✅ Properties loaded successfully.");
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
+		// 1. Get the ClassLoader
+		ClassLoader classLoader = LDHExport.class.getClassLoader();
+		try (InputStream input = classLoader.getResourceAsStream(fileName)) {
+			if (input == null) {
+				log.info("Resource file '" + fileName + "' not found on the classpath.");
+				return;
+			}
+			prop.load(input);
+			log.info("Resource file '" + fileName + "' loaded.");
+		} catch (IOException ex) {
+			ex.printStackTrace();
+		}
 	}
 	/**
 	 * Platz 1: System.Env
@@ -59,47 +50,47 @@ public class LDHExport {
 		server.stop();
 	}
 	public static void main(String[] args) throws Exception {
-//		prop.load(Thread.currentThread().getContextClassLoader().getResourceAsStream("config.properties"));		
+		//		prop.load(Thread.currentThread().getContextClassLoader().getResourceAsStream("config.properties"));
 		loadProperties("config.properties");
 		xp = new XslPipeline();
 		copy("LDH_EXP_PORT","8083");
 		copy("LDH_EXP","http://localhost" + (System.getProperty("LDH_EXP_PORT")==null?"":":"+System.getProperty("LDH_EXP_PORT")));
 		copy("LDH_SOURCE","https://ldh.zks.uni-leipzig.de");
-//		copy("CSH_URL","https://csh.nfdi4health.de");
-//		copy("CLIENT_ID","ldh-test");		
-//		copy("CLIENT_SECRET",null);
-//		copy("CSH_TOKEN_URL","https://sso.studyhub.nfdi4health.de/realms/nfdi4health/protocol/openid-connect/token");
+		//		copy("CSH_URL","https://csh.nfdi4health.de");
+		//		copy("CLIENT_ID","ldh-test");
+		//		copy("CLIENT_SECRET",null);
+		//		copy("CSH_TOKEN_URL","https://sso.studyhub.nfdi4health.de/realms/nfdi4health/protocol/openid-connect/token");
 
 
 		server = new Server(Integer.parseInt(System.getProperty("LDH_EXP_PORT")));
-//		{
-//			final HttpConfiguration httpConfiguration = new HttpConfiguration();
-//			httpConfiguration.setSecureScheme("https");
-//			int httpsPort = 8084;
-//			int httpPort = 8083;
-//			httpConfiguration.setSecurePort(httpsPort);
-//
-//			final ServerConnector http = new ServerConnector(server,
-//			    new HttpConnectionFactory(httpConfiguration));
-//			http.setPort(httpPort);
-//			server.addConnector(http);
-//			
-//
-//			String keyStorePassword = null;
-//			final SslContextFactory.Server sslContextFactory = new SslContextFactory.Server();
-//			sslContextFactory.setKeyStorePassword(keyStorePassword);
-//			final HttpConfiguration httpsConfiguration = new HttpConfiguration(httpConfiguration);
-//			httpsConfiguration.addCustomizer(new SecureRequestCustomizer());
-//			final ServerConnector httpsConnector = new ServerConnector(server,
-//			    new SslConnectionFactory(sslContextFactory, HttpVersion.HTTP_1_1.asString()),
-//			    new HttpConnectionFactory(httpsConfiguration));
-//			httpsConnector.setPort(httpsPort);
-//			server.addConnector(httpsConnector);
-//		}
+		//		{
+		//			final HttpConfiguration httpConfiguration = new HttpConfiguration();
+		//			httpConfiguration.setSecureScheme("https");
+		//			int httpsPort = 8084;
+		//			int httpPort = 8083;
+		//			httpConfiguration.setSecurePort(httpsPort);
+		//
+		//			final ServerConnector http = new ServerConnector(server,
+		//			    new HttpConnectionFactory(httpConfiguration));
+		//			http.setPort(httpPort);
+		//			server.addConnector(http);
+		//
+		//
+		//			String keyStorePassword = null;
+		//			final SslContextFactory.Server sslContextFactory = new SslContextFactory.Server();
+		//			sslContextFactory.setKeyStorePassword(keyStorePassword);
+		//			final HttpConfiguration httpsConfiguration = new HttpConfiguration(httpConfiguration);
+		//			httpsConfiguration.addCustomizer(new SecureRequestCustomizer());
+		//			final ServerConnector httpsConnector = new ServerConnector(server,
+		//			    new SslConnectionFactory(sslContextFactory, HttpVersion.HTTP_1_1.asString()),
+		//			    new HttpConnectionFactory(httpsConfiguration));
+		//			httpsConnector.setPort(httpsPort);
+		//			server.addConnector(httpsConnector);
+		//		}
 		ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
 		context.setContextPath("/");
 		context.addServlet(ServletLdhExport.class, "/export/*");
-		context.addServlet(ServletLdhExportNew.class, "/exportnew/*");
+		//		context.addServlet(ServletLdhExportNew.class, "/exportnew/*");
 		context.addServlet(ServletCshStats.class, "/stats");
 		context.addServlet(ServletCshUser.class, "/user");
 		context.addServlet(ServletCshPublish.class, "/publish/*");
