@@ -1,4 +1,4 @@
-IMAGE_TAG=fmeineke/ldh-exp:v2.7
+IMAGE_TAG=fmeineke/ldh-exp:v2.8
 
 jar:
 	mvn install dependency:copy-dependencies -DoutputDirectory=target/lib
