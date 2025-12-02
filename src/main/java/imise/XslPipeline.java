@@ -34,10 +34,12 @@ public class XslPipeline {
 	SAXTransformerFactory stf;
 	final static Logger log = LoggerFactory.getLogger(XslPipeline.class);
 
-	
+
 	InputStream loadResource(String name) {
 		InputStream is= getClass().getClassLoader().getResourceAsStream(name);
-		if (is == null )log.debug("failed to load " + name);
+		if (is == null ) {
+			log.debug("failed to load " + name);
+		}
 		return is;
 	}
 	public XslPipeline() throws TransformerConfigurationException {
@@ -47,8 +49,8 @@ public class XslPipeline {
 			xslJson2Xml = stf.newTemplates(new StreamSource(loadResource("xsl/json2xml.xsl")));
 			log.debug("compiling xslLdh2Csh");
 			xslLdh2Csh = stf.newTemplates(new StreamSource(loadResource("xsl/ldh2csh.xsl")));
-			log.debug("compiling xslLdh2CshNew");
-			xslLdh2CshNew = stf.newTemplates(new StreamSource(loadResource("xsl/ldh2cshNew.xsl")));
+			//			log.debug("compiling xslLdh2CshNew");
+			//			xslLdh2CshNew = stf.newTemplates(new StreamSource(loadResource("xsl/ldh2cshNew.xsl")));
 			log.debug("compiling xslXml2Json");
 			xslXml2Json = stf.newTemplates(new StreamSource(loadResource("xsl/xml2json.xsl")));
 			log.debug("compiling xslCsh2Xml");
@@ -87,7 +89,7 @@ public class XslPipeline {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param input XML Source
 	 * @param out   OutputStream, receiving json
 	 * @throws TransformerException
@@ -114,7 +116,7 @@ public class XslPipeline {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param input XML Source
 	 * @param out   OutputStream, receiving xml
 	 * @throws TransformerException
@@ -144,9 +146,9 @@ public class XslPipeline {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param s
-	 * @return json might include & or < 
+	 * @return json might include & or <
 	 */
 	String prepareJson(String s) {
 		return "<data>" + s.replaceAll("&|\\\\u0026", "&amp;").replace("<", "&lt;") + "</data>";
