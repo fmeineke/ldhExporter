@@ -31,19 +31,21 @@ public class ServletLdhExport extends HttpServlet {
 	final static Logger log = LoggerFactory.getLogger(LDHExport.class);
 
 	XslPipeline xp = LDHExport.xp;
-	
+
 	JsonMapper jsonMapper = JsonMapper.builder().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
 			.build();
 
 	void process(String format, HttpServletResponse response, JsonNode json) throws HttpException {
 		Source source = xp.prepareJson(json);
 		ByteArrayOutputStream data = new ByteArrayOutputStream();
-		if (format == null) format = "csh";
+		if (format == null) {
+			format = "csh";
+		}
 
-	try {
+		try {
 			switch (format) {
 			case "seek":
-				try (PrintWriter p = new PrintWriter(data)) { 
+				try (PrintWriter p = new PrintWriter(data)) {
 					p.write(json.toPrettyString());
 				}
 				response.setContentType(JSON);
@@ -53,12 +55,12 @@ public class ServletLdhExport extends HttpServlet {
 				response.setContentType(XML);
 				break;
 			case "prettyxml":
-	            XmlMapper xmlMapper = new XmlMapper();
-	            xmlMapper.configure( ToXmlGenerator.Feature.WRITE_XML_DECLARATION, true );
+				XmlMapper xmlMapper = new XmlMapper();
+				xmlMapper.configure( ToXmlGenerator.Feature.WRITE_XML_DECLARATION, true );
 				response.setContentType(XML);
 				response.setStatus(HttpServletResponse.SC_OK);
-	            xmlMapper.writeValue(response.getWriter(), json);
-	            return;
+				xmlMapper.writeValue(response.getWriter(), json);
+				return;
 				//break;
 			case "xml":
 				xp.pipeToXml(source,data);
@@ -67,7 +69,7 @@ public class ServletLdhExport extends HttpServlet {
 			case "cshxml":
 				xp.pipeToCshXml(source, data);
 				response.setContentType(XML);
-				break;			
+				break;
 			case "fhir":
 				xp.pipeToFhir(source, data);
 				response.setContentType(XML);
@@ -82,7 +84,7 @@ public class ServletLdhExport extends HttpServlet {
 		}
 		catch(TransformerException | IOException e) {
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-		} 
+		}
 	}
 
 	@Override
@@ -90,8 +92,9 @@ public class ServletLdhExport extends HttpServlet {
 			throws ServletException, IOException {
 		try {
 			JsonNode json = new ObjectMapper().readTree(request.getInputStream());
-			if (json.isEmpty())
+			if (json.isEmpty()) {
 				throw new HttpException(0,"empty body / no json content found");
+			}
 			process(request.getParameter("format"),response,json);
 		} catch (HttpException e) {
 			response.sendError(e.getCode(), e.getMessage());
@@ -100,17 +103,19 @@ public class ServletLdhExport extends HttpServlet {
 
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {		
+			throws ServletException, IOException {
 		try {
 			JsonNode json = fetchFromPath(request.getPathInfo());
-			process(request.getParameter("format"),response,json);			
+			process(request.getParameter("format"),response,json);
 		} catch (HttpException e) {
 			response.sendError(e.getCode(),e.getMessage());
 		}
 	}
-	
+
 	public static JsonNode fetchFromPath(String pathInfo) throws HttpException {
-		if (pathInfo == null || pathInfo.length()==1) throw new HttpException(0,"missing id");
+		if (pathInfo == null || pathInfo.length()==1) {
+			throw new HttpException(0,"missing id");
+		}
 		return fetch(pathInfo.substring(1));
 	}
 	public static JsonNode fetch(String id) throws HttpException {
@@ -119,9 +124,12 @@ public class ServletLdhExport extends HttpServlet {
 		// id is complete pathInfo like "projects/23"
 		return api.getResource(id);
 	}
-	
+
 	public static JsonNode fetch(InputStream is) throws IOException {
 		return new ObjectMapper().readTree(is);
+	}
+	public static JsonNode fetchFromString(String s) throws IOException {
+		return new ObjectMapper().readTree(s);
 	}
 
 
