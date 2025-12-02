@@ -1,4 +1,5 @@
 <html>
+
 <body>
     <h1>SeekExporter</h1>
     <p>Simple REST-API for transforming <a href="https://seek4science.org/">FAIRDOM Seek</a> investigations with NFDI4Health defined MDS extended metadata and communicating with Health Study Hub</p>
@@ -27,6 +28,13 @@
             <li>GET <a href="${LDH_EXP}/validate/projects/2">${LDH_EXP}/validate/projects/2</a></li>
         </ul>
     </p>
+	<h2>Validate CSH or SEEK json</h2>
+	<p>Check validation_error at end of file</p>
+	<form action="/validate" method="post">
+	    <label for="message">Enter SEEK json e.g. projects/2.json, or CSH json here:</label><br>
+	    <textarea id="message" name="message" rows="10" cols="100"></textarea><br><br>
+	    <button type="submit">Validate</button>
+	  </form>
     <hr/>
 Version 01.12.2025 &#169; F. Meineke for <a href="https://www.nfdi4health.de/">NFDI4Health</a>
 </body>
