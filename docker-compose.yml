@@ -1,6 +1,6 @@
 services:
   exporter:
-    image: fmeineke/ldh-exp:v2.7
+    image: ${IMAGE}
     restart: unless-stopped
     environment:
       #      - LDH_EXP=https://ldh-test.zks.uni-leipzig.de

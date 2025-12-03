@@ -3,10 +3,8 @@ package imise;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.stream.StreamSource;
@@ -45,6 +43,7 @@ public class ServletLdhImportCTG extends HttpServlet {
 	final static String HTML = "text/html; charset=utf-8";
 	final static String XML = "application/xml; charset=utf-8";
 	final static Logger log = LoggerFactory.getLogger(LDHExport.class);
+    private static final ObjectMapper MAPPER = new ObjectMapper();
 
 	XslPipeline xp = LDHExport.xp;
 	
@@ -103,7 +102,7 @@ public class ServletLdhImportCTG extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		try {
-			JsonNode json = new ObjectMapper().readTree(request.getInputStream());
+			JsonNode json = MAPPER.readTree(request.getInputStream());
 			if (json.isEmpty())
 				throw new HttpException(0,"empty body / no json content found");
 			process(request.getParameter("format"),response,json);
@@ -136,7 +135,7 @@ public class ServletLdhImportCTG extends HttpServlet {
 	}
 	
 	public static JsonNode fetch(InputStream is) throws IOException {
-		return new ObjectMapper().readTree(is);
+		return MAPPER.readTree(is);
 	}
 
 	/**
@@ -147,27 +146,26 @@ public class ServletLdhImportCTG extends HttpServlet {
      *  
      */
     public static ObjectNode removeEmptyFields(final ObjectNode jsonNode) {
-        ObjectNode ret = new ObjectMapper().createObjectNode();
-        Iterator<Entry<String, JsonNode>> iter = jsonNode.fields();
-
-        while (iter.hasNext()) {
-            Entry<String, JsonNode> entry = iter.next();
+        ObjectNode ret = MAPPER.createObjectNode();
+        
+        for (Map.Entry<String, JsonNode> entry : jsonNode.properties()) {
             String key = entry.getKey();
             JsonNode value = entry.getValue();
 
-            if (value instanceof ObjectNode) {
-                Map<String, ObjectNode> map = new HashMap<String, ObjectNode>();
-                map.put(key, removeEmptyFields((ObjectNode)value));
-                ret.setAll(map);
-            }
-            else if (value instanceof ArrayNode) {
-                ret.set(key, removeEmptyFields((ArrayNode)value));
-            }
-            else if (value.asText() != null && !value.asText().isEmpty()) {
+            if (value.isObject()) {
+                ObjectNode cleaned = removeEmptyFields((ObjectNode) value);
+                if (!cleaned.isEmpty()) {
+                    ret.set(key, cleaned);
+                }
+            } else if (value.isArray()) {
+                ArrayNode cleaned = removeEmptyFields((ArrayNode) value);
+                if (!cleaned.isEmpty()) {
+                    ret.set(key, cleaned);
+                }
+            } else if (!value.asText().isEmpty()) {
                 ret.set(key, value);
             }
         }
-
         return ret;
     }
 
@@ -179,7 +177,7 @@ public class ServletLdhImportCTG extends HttpServlet {
      * Source: https://technicaldifficulties.io/2018/04/26/using-jackson-to-remove-empty-json-fields/
      */
     public static ArrayNode removeEmptyFields(ArrayNode array) {
-        ArrayNode ret = new ObjectMapper().createArrayNode();
+        ArrayNode ret = MAPPER.createArrayNode();
         Iterator<JsonNode> iter = array.elements();
 
         while (iter.hasNext()) {
@@ -205,20 +203,16 @@ public class ServletLdhImportCTG extends HttpServlet {
      * @see <a href="https://stackoverflow.com/questions/50689110/how-to-configure-jackson-xmlmapper-to-use-data-types-from-xml-schema">Stackoverflow</a> 
      */
     public static JsonNode resolveType(JsonNode jsonNode) {
-        if (jsonNode instanceof ObjectNode) {
-            ObjectNode objectNode = (ObjectNode) jsonNode;
-            Iterator<Entry<String, JsonNode>> fields = objectNode.fields();
-            while (fields.hasNext()) {
-                Entry<String, JsonNode> next = fields.next();
-                next.setValue(resolveType(next.getValue()));
+        if (jsonNode instanceof ObjectNode objectNode) {
+            for (var entry : objectNode.properties()) {
+                entry.setValue(resolveType(entry.getValue()));
             }
-        } else if (jsonNode instanceof TextNode) {
-            TextNode textNode = (TextNode) jsonNode;
+        } else if (jsonNode instanceof TextNode textNode) {
             String value = textNode.textValue();
             if ("true".equalsIgnoreCase(value) || "false".equalsIgnoreCase(value)) {
-                jsonNode = BooleanNode.valueOf(Boolean.valueOf(value));
+                jsonNode = BooleanNode.valueOf(Boolean.parseBoolean(value));
             } else if (StringUtils.isNumeric(value)) {
-                jsonNode = LongNode.valueOf(Long.valueOf(value));
+                jsonNode = LongNode.valueOf(Long.parseLong(value));
             }
         }
         return jsonNode;

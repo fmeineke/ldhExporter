@@ -90,17 +90,17 @@ public class LDHExport {
 		ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
 		context.setContextPath("/");
 		context.addServlet(ServletLdhExport.class, "/export/*");
-		//		context.addServlet(ServletLdhExportNew.class, "/exportnew/*");
-		context.addServlet(ServletCshStats.class, "/stats");
-		context.addServlet(ServletCshUser.class, "/user");
-		context.addServlet(ServletCshPublish.class, "/publish/*");
+//		context.addServlet(ServletLdhExportNew.class, "/exportnew/*");
+//		context.addServlet(ServletCshStats.class, "/stats");
+//		context.addServlet(ServletCshUser.class, "/user");
+//		context.addServlet(ServletCshPublish.class, "/publish/*");
 		context.addServlet(ServletValidate.class, "/validate/*");
-		context.addServlet(ServletCshDelete.class, "/delete/*");
-		context.addServlet(ServletLdhImportCTG.class, "/ctg/*");
+//		context.addServlet(ServletCshDelete.class, "/delete/*");
+//		context.addServlet(ServletLdhImportCTG.class, "/ctg/*");
 		context.addServlet(ServletIndex.class, "/");
 
 		server.setHandler(context);
 		server.start();
-		//        server.join();
+		server.join();
 	}
 }

@@ -147,7 +147,6 @@ public class JsonAPI {
 
 	public JsonNode getResource(String path) throws HttpException {
 		try {
-			String s = getResourceAsString(path);
 			return jsonMapper.readTree(getResourceAsString(path));
 		} catch(HttpException e) {
 			throw e;
