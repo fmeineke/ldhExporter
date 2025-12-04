@@ -2,7 +2,7 @@
 
 <body>
     <h1>SeekExporter</h1>
-    <p>Simple REST-API for transforming <a href="https://seek4science.org/">FAIRDOM Seek</a> investigations with NFDI4Health defined MDS extended metadata and communicating with Health Study Hub</p>
+    <p>Simple REST-API for transforming <a href="https://seek4science.org/">FAIRDOM Seek</a> projects and investigations with NFDI4Health defined MDS extended metadata and communicating with Health Study Hub</p>
 
     <h2>API</h2>
     
@@ -14,10 +14,13 @@
     <h2>Example for Testserver ${LDH_SOURCE}</h2>
     <p> 
         <ul>
-            <li>
+            <li>Two steps validation:<br/>
                 <tt>curl ${LDH_SOURCE}/projects/2.json > data.json</tt>
                 <br>
-                <tt>curl -X POST -H "Content-Type: application/json" -d"@data.json" "${LDH_SOURCE}/export?format=xml"</tt>
+                <tt>curl -X POST -H "Content-Type: application/json" -d"@data.json" "${LDH_EXP}/validate"</tt>
+            </li>
+            <li>Single step validation<br/>
+                <tt>curl ${LDH_SOURCE}/projects/2.json | curl -X POST -H "Content-Type: application/json" -d"@-" "${LDH_EXP}/validate"</tt>
             </li>
             <li>GET <a href="${LDH_EXP}/export/projects/2">${LDH_EXP}/export/projects/2</a></li>
             <li>GET <a href="${LDH_EXP}/export/projects/2?format=seek">${LDH_EXP}/export/projects/2?format=seek</a></li>

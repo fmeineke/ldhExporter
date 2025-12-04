@@ -47,7 +47,7 @@ public class ServletValidate extends HttpServlet {
 				json = ServletLdhExport.fetchFromPath(request.getPathInfo());
 			} else {
 				String message = request.getParameter("message"); // textarea content
-				if (message.isEmpty()) {
+				if (message == null || message.isEmpty()) {
 					json = ServletLdhExport.fetch(request.getInputStream());
 				} else {
 					json = ServletLdhExport.fetchFromString(message);
@@ -65,7 +65,7 @@ public class ServletValidate extends HttpServlet {
 
 			response.setContentType(JSON);
 			response.setStatus(HttpServletResponse.SC_OK);
-			response.getWriter().print(json.toString());
+			response.getWriter().print(json.toPrettyString());
 		} catch (HttpException e) {
 			response.sendError(e.getCode(), e.getMessage());
 		} catch (IOException | TransformerException e) {
@@ -161,18 +161,38 @@ public class ServletValidate extends HttpServlet {
 		 * ,
                 "provenance in 1211 gelöscht
 		 */
-		try (InputStream schemaStream = ServletLdhExport.class.getClassLoader().getResourceAsStream(MDSschema )) {
-			// get schema from the schemaStream and store it into JsonSchema
-			JsonSchema schema = schemaFactory.getSchema(schemaStream);
-			// create set of validation message and store result in it
-			Set<ValidationMessage> validationResult = schema.validate( resourceNode );
-			ArrayNode err = ((ObjectNode) json).putArray("validation_error");
-			for ( ValidationMessage m : validationResult) {
-				err.add(m.getMessage());
-			}
-			log.info("Validated using " + MDSschema);
-			return sortJsonRecursively(json);
+		try (InputStream schemaStream = ServletLdhExport.class.getClassLoader().getResourceAsStream(MDSschema)) {
+		    // get schema from the schemaStream and store it into JsonSchema
+		    JsonSchema schema = schemaFactory.getSchema(schemaStream);
 
+		    // create set of validation message and store result in it
+		    Set<ValidationMessage> validationResult = schema.validate(resourceNode);
+
+		    ArrayNode err = ((ObjectNode) json).putArray("validation_error");
+
+		    for (ValidationMessage m : validationResult) {
+		        String raw = m.getMessage();
+
+		        String extracted = raw; // fallback
+		        int jsonStart = raw.indexOf('{');
+		        if (jsonStart != -1) {
+		            try {
+		                ObjectMapper mapper = new ObjectMapper();
+		                JsonNode node = mapper.readTree(raw.substring(jsonStart));
+		                if (node.has("errorMessage")) {
+		                    extracted = node.get("errorMessage").asText().replace("\"", "'");
+		                }
+		            } catch (Exception e) {
+		                // ignore parse errors, keep raw
+		            }
+		        }
+
+		        ObjectNode msgNode = err.addObject();
+		        msgNode.put("errorMessage", extracted);
+		    }
+
+		    log.info("Validated using " + MDSschema);
+		    return sortJsonRecursively(json);
 		}
 	}
 }
