@@ -92,6 +92,16 @@
    </string>
 </xsl:template>
 
+<!-- Transform boolean false into empty string -->
+<xsl:template
+    match="boolean[@key=concat('Resource_nutritionalData',$resource)
+    or @key=concat('Resource_chronicDiseases',$resource)
+    or @key=concat('Design_dataSharingPlan_recordLinkage',$resource)]">
+    <string>
+        <xsl:call-template name="setKey" />
+     </string>
+</xsl:template>
+
 <!-- Patch wrong ISO  3166 names-->
 <xsl:template
     match="array[@key=concat('Design_population_countries',$resource)]/string">

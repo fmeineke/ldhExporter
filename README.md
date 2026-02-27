@@ -17,7 +17,7 @@ All data is retrieved from https://ldh.zks.uni-leipzig.de.
 - https://ldh-test.zks.uni-leipzig.de/export/projects/21&format=cshval
 - https://ldh-test.zks.uni-leipzig.de/export/projects/21&format=xml
 
-Version 08.2025 © F. Meineke for NFDI4Health
+Version 27.02.2026 © F. Meineke for NFDI4Health
 
 
 
