@@ -92,14 +92,11 @@
    </string>
 </xsl:template>
 
-<!-- Transform boolean false into empty string -->
+<!-- Remove these booleans  -->
 <xsl:template
     match="boolean[@key=concat('Resource_nutritionalData',$resource)
     or @key=concat('Resource_chronicDiseases',$resource)
     or @key=concat('Design_dataSharingPlan_recordLinkage',$resource)]">
-    <string>
-        <xsl:call-template name="setKey" />
-     </string>
 </xsl:template>
 
 <!-- Patch wrong ISO  3166 names-->
